@@ -1,9 +1,10 @@
 const User = require('../models/user');
 
 module.exports.getUser = (req, res) => {
+
   User.findById(req.params.id)
-    .then(user => res.send({ data: user}))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(404).send({ message: "Запрашиваемый пользователь не найден" }));
 };
 
 module.exports.getUsers = (req, res) => {
@@ -17,22 +18,22 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .catch(err => res.status(400).send({ message: "Некорректные данные пользователя" }));
 };
 
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
 
-  User.findOneAndUpdate ({name, about})
+  User.findOneAndUpdate({ name, about })
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .catch(err => res.status(400).send({ message: "Некорректные данные пользователя" }));
 };
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
-  User.findOneAndUpdate ({avatar})
+  User.findOneAndUpdate({ avatar })
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .catch(err => res.status(400).send({ message: "Некорректная ссылка на аватар" }));
 };
 
