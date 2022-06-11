@@ -5,10 +5,10 @@ router.get('/cards', getCards);
 
 router.post('/cards', createCard);
 
-router.delete('/cards/:cardId', deleteCard);
+router.delete('/cards/:id', deleteCard);
 
-router.put('/cards/:cardId/likes', likeCard);
+router.put('/cards/:id/likes', likeCard);
 
-router.delete('/cards/:cardId/likes', dislikeCard);
+router.delete('/cards/:id/likes', dislikeCard);
 
 module.exports = router;
