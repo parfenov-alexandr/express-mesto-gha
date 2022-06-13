@@ -9,14 +9,18 @@ module.exports.getCards = (req, res) => {
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
 
-  Card.create({ name, link, owner: 'req.user._id'})
-    .then(card => res.status(200).send( {data: card} ))
+  Card.create({ name, link, owner: 'req.user._id' })
+    .then(card => res.status(200).send({ data: card }))
     .catch(err => res.status(400).send({ message: "Некорректные данные карточки" }));
 };
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
-    .then(card => res.status(200).send({ data: card }))
+    .then(card => {
+      if (!card) {
+        res.status(404).send({ message: "Такой карточки не существует" })
+      } else res.status(200).send({ data: card })
+    })
     .catch(err => res.status(400).send({ message: err.message }));
 };
 
@@ -26,8 +30,12 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-  .then((card) => res.status(200).send({ data: card }))
-  .catch(err => res.status(400).send({ message: err.message }))
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: "Такой карточки не существует" })
+      } else res.status(200).send({ data: card })
+    })
+    .catch(err => res.status(400).send({ message: err.message }))
 }
 
 module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
@@ -35,5 +43,9 @@ module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
   { $pull: { likes: req.user._id } },
   { new: true },
 )
-.then((card) => res.status(200).send({ data: card }))
-.catch(err => res.status(400).send({ message: err.message }));
+  .then((card) => {
+    if (!card) {
+      res.status(404).send({ message: "Такой карточки не существует" })
+    } else res.status(200).send({ data: card })
+  })
+  .catch(err => res.status(400).send({ message: err.message }));
