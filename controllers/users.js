@@ -44,7 +44,7 @@ module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   const { _id } = req.user
 
-  User.findByIdAndUpdate({ _id }, { avatar })
+  User.findByIdAndUpdate({ _id }, { avatar }, { new: true })
     .then(user => res.status(200).send({ data: user }))
     .catch(err => res.status(400).send({ message: "Некорректная ссылка на аватар" }));
 };
