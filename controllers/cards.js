@@ -9,8 +9,8 @@ module.exports.getCards = (req, res) => {
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
 
-  Card.create({ name, link, owner: 'req.user._id' })
-    .then(card => res.status(200).send({ data: card }))
+  Card.create({ name, link, owner: 'req.user._id'})
+    .then(card => res.status(200).send( {data: card} ))
     .catch(err => res.status(400).send({ message: "Некорректные данные карточки" }));
 };
 
@@ -26,12 +26,8 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (req.params.id) {
-        res.status(200).send({ data: card })
-      } else return res.status(404).send({ message: "Такой карточки не существует" })
-    })
-    .catch(err => res.status(500).send({ message: err.message }))
+  .then((card) => res.status(200).send({ data: card }))
+  .catch(err => res.status(400).send({ message: err.message }))
 }
 
 module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
@@ -39,5 +35,5 @@ module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
   { $pull: { likes: req.user._id } },
   { new: true },
 )
-  .then((card) => res.status(200).send({ data: card }))
-  .catch(err => res.status(400).send({ message: err.message }));
+.then((card) => res.status(200).send({ data: card }))
+.catch(err => res.status(400).send({ message: err.message }));

@@ -17,12 +17,10 @@ const cardSchema = new mongoose.Schema({
     ref: 'user',
     required: true,
   },
-  likes: [
-    {
+  likes: [{
       type: ObjectId,
       default: []
-    }
-  ],
+    }],
   createdAt: {
     type: Date,
     default: Date.now,
