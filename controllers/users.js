@@ -6,14 +6,20 @@ module.exports.getUser = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: 'Такого пользователя не существует' });
       }
-      return res.status(200).send({ data: user });
+      return res.send({ data: user });
     })
-    .catch(() => res.status(400).send({ message: 'Запрашиваемый пользователь не найден' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректный id пользователя' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -21,8 +27,14 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.status(200).send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Некорректные данные пользователя' }));
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Некорректные данные пользователя' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.updateProfile = (req, res) => {
@@ -31,22 +43,39 @@ module.exports.updateProfile = (req, res) => {
   User.findByIdAndUpdate(
     { _id },
     { name, about },
-    { new: true },
+    {
+      new: true,
+      runValidators: true,
+    },
   )
-    .then((user) => {
-      if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
-        return res.status(400).send({ message: 'Введено или меньше 2 символов или больше 30' });
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
       }
-      return res.status(200).send({ data: user });
-    })
-    .catch(() => res.status(400).send({ message: 'Некорректные данные пользователя' }));
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   const { _id } = req.user;
 
-  User.findByIdAndUpdate({ _id }, { avatar }, { new: true })
+  User.findByIdAndUpdate(
+    { _id },
+    { avatar },
+    {
+      new: true,
+      runValidators: true,
+    },
+  )
     .then((user) => res.status(200).send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Некорректная ссылка на аватар' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Некорректная ссылка на аватар' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };

@@ -10,7 +10,7 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: 'req.user._id' })
-    .then((card) => res.status(200).send({ data: card }))
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Некорректные данные карточки' });
@@ -25,7 +25,7 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Такой карточки не существует' });
-      } else res.status(200).send({ data: card });
+      } else res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -45,7 +45,7 @@ module.exports.likeCard = (req, res) => {
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Такой карточки не существует' });
-      } else res.status(200).send({ data: card });
+      } else res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -64,7 +64,7 @@ module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
   .then((card) => {
     if (!card) {
       res.status(404).send({ message: 'Такой карточки не существует' });
-    } else res.status(200).send({ data: card });
+    } else res.send({ data: card });
   })
   .catch((err) => {
     if (err.name === 'CastError') {
