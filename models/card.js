@@ -18,9 +18,9 @@ const cardSchema = new mongoose.Schema({
     required: true,
   },
   likes: [{
-      type: ObjectId,
-      default: []
-    }],
+    type: ObjectId,
+    default: [],
+  }],
   createdAt: {
     type: Date,
     default: Date.now,
